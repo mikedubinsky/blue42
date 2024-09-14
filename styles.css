@@ -80,12 +80,12 @@ body {
     box-sizing: border-box;
     padding: 20px;
     text-align: center;
-    background: #f1f1f1;
+    background: #d4e5e5;
+    h2, p {
+        margin-bottom: 25px;
+    }
 }
 
-.buttons {
-    margin-top: 20px;
-}
 
 .btn {
     padding: 10px 20px;
