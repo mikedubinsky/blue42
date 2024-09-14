@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Header with Logos and Slider Form</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+    <div class="logo-left">
+        <img src="logo-left.png" alt="Left Logo">
+    </div>
+    <h1>My Simple Header</h1>
+    <div class="logo-right">
+        <img src="logo-right.png" alt="Right Logo">
+    </div>
+</header>
+
+<!-- Slider Form Block -->
+<div class="form-container" id="form-container">
+    <div class="form-slider">
+        <form id="slider-form" onsubmit="submitForm(event)">
+            <!-- Step 1 -->
+            <div class="form-step" id="step-1">
+                <h2>Step 1</h2>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+                <button type="button" class="next-btn" onclick="nextStep(1)">Next</button>
+            </div>
+            <!-- Step 2 -->
+            <div class="form-step" id="step-2">
+                <h2>Step 2</h2>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                <button type="button" class="prev-btn" onclick="prevStep(2)">Previous</button>
+                <button type="button" class="next-btn" onclick="nextStep(2)">Next</button>
+            </div>
+            <!-- Step 3 -->
+            <div class="form-step" id="step-3">
+                <h2>Step 3</h2>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+                <button type="button" class="prev-btn" onclick="prevStep(3)">Previous</button>
+                <button type="submit" class="submit-btn">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <p>&copy; 2024 My Website. All Rights Reserved.</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
