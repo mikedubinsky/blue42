@@ -133,6 +133,52 @@ footer {
     padding: 10px;
 }
 
+/* Modal styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+.modal-content {
+    position: relative;
+    background-color: #fff;
+    margin: 40% auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 5px;
+}
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 18px;
+    cursor: pointer;
+}
+a#openModal {
+    color: inherit;
+    text-decoration: none;
+    padding: 10px 0;
+    display: block;
+}
+
+a#openModal:hover {
+    color: #d4e5e5;
+    text-decoration: underline;
+}
+
+#disclaimer h2 {
+    padding:20px 0;
+}
+
+#disclaimer p {
+    line-height: 25px;
+}
 /* loading styles */
 .placeholder {
     width: 100%;
