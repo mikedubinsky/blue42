@@ -7,7 +7,7 @@
     "dev": "parcel index.html",
     "prebuild": "rm -rf docs && sleep 1",
     "build": "parcel build index.html --public-url .",
-    "postbuild": "sleep 1 && mv dist docs"
+    "postbuild": "sleep 1 && cp -R dist docs"
   },
   "author": "",
   "license": "ISC",
