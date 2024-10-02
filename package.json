@@ -5,9 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "parcel index.html",
-    "prebuild": "rm -rf docs && rm -rf dist/* && sleep 1",
-    "build": "parcel build index.html --public-url .",
-    "postbuild": "sleep 1 && cp -R dist docs"
+    "build": "rm -rf docs dist .parcel-cache && parcel build index.html --no-cache --public-url .",
+    "postbuild": "sleep 3 && mkdir docs && cp -R dist/* docs"
   },
   "author": "",
   "license": "ISC",
