@@ -162,7 +162,7 @@ function showResponse(message = "", imageUrl = "", voteResults) {
     slogan.textContent = "";
 
     // remove placeholder
-    const results = document.getElementById('results')
+    const results = document.getElementById('results-placeholder')
     console.log("PollResults: ", voteResults)
     if (voteResults) {
         const agree = document.getElementById('vote-results');

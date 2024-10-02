@@ -18,6 +18,8 @@
     <h1>AI Vote Helper</h1>
 </header>
 
+<div style="width:800px;"><canvas id="aiResultsChart"></canvas></div>
+
 <!-- Slider Form Block -->
 <div id="slider-form">
     <div class="slider">
@@ -27,8 +29,10 @@
                 <div class="placeholder">
                 </div>
             </div>
-            <div class="slide placeholder" id="results">
-                <img id="aiImage" src="" alt="">
+            <div class="slide" id="results">
+                <div class="placeholder" id="results-placeholder">
+                </div>
+                <img id="aiImage" >
                 <h2 id="slogan">Please be patient as AI generates your results.</h2>
                 <div id="vote-results" class="hidden">
                     <h3>Do you agree?</h3>
@@ -59,5 +63,6 @@
 
 <script src="script.js"></script>
 <script src="modal.js"></script>
+<script type="module" src="aiResultChart.js"></script>
 </body>
 </html>
