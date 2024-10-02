@@ -1,3 +1,5 @@
+import Chart from 'chart.js/auto'
+
 document.addEventListener('DOMContentLoaded', async () => {
     const questions = await getQuestions();
     const answers = [];
@@ -182,3 +184,32 @@ function showResponse(message = "", imageUrl = "", voteResults) {
 
     results.scrollIntoView({behavior: 'smooth'});
 }
+
+
+(async function () {
+    const data = [
+        {year: 2010, count: 10},
+        {year: 2011, count: 20},
+        {year: 2012, count: 15},
+        {year: 2013, count: 25},
+        {year: 2014, count: 22},
+        {year: 2015, count: 30},
+        {year: 2016, count: 28},
+    ];
+
+    new Chart(
+        document.getElementById('aiResultsChart'),
+        {
+            type: 'bar',
+            data: {
+                labels: data.map(row => row.year),
+                datasets: [
+                    {
+                        label: 'Acquisitions by year',
+                        data: data.map(row => row.count)
+                    }
+                ]
+            }
+        }
+    );
+})();

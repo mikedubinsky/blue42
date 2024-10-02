@@ -18,7 +18,7 @@
     <h1>AI Vote Helper</h1>
 </header>
 
-<div style="width:800px;"><canvas id="aiResultsChart"></canvas></div>
+
 
 <!-- Slider Form Block -->
 <div id="slider-form">
@@ -45,6 +45,11 @@
         </div>
     </div>
 </div>
+
+<!--pie chart-->
+<div style="width:800px;" class="hidden"><canvas id="aiResultsChart"></canvas></div>
+
+
 <!--disclaimer modal-->
 <div id="disclaimer" class="modal">
     <div class="modal-content">
@@ -61,8 +66,7 @@
     <p>&copy; 2024 AiVote Dubslack. All Rights Reserved.</p> <a href="#" id="openModal">Disclaimer</a>
 </footer>
 
-<script src="script.js"></script>
+<script type="module" src="script.js"></script>
 <script src="modal.js"></script>
-<script type="module" src="aiResultChart.js"></script>
 </body>
 </html>
