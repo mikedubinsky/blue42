@@ -31,6 +31,11 @@ header h1 {
     text-align: center;
     font-size: 24px;
 }
+.graphs {
+    max-width: min(90%, 650px);
+    min-width: 50% !important;
+    /*width: 100%;*/
+}
 
 #slider-form {
     min-width: 50%;
@@ -52,7 +57,7 @@ header h1 {
     min-height: 200px;
 }
 
-.slide {
+.slide, .graph {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
@@ -95,7 +100,6 @@ header h1 {
 
 /* Footer Styles */
 footer {
-    position: fixed;
     bottom: 0;
     width: 100%;
     text-align: center;
@@ -204,5 +208,12 @@ a#openModal:hover {
 
 #vote-results h2 {
     margin-bottom: 10px;
+}
+
+#vote-graph{
+    margin: 75px 0;
+    canvas {
+        padding: 50px;
+    }
 }
 

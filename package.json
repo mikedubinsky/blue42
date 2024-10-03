@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "parcel index.html",
+    "dev": "parcel serve index.html --no-hmr",
     "build": "rm -rf docs dist .parcel-cache && parcel build index.html --no-cache --public-url .",
     "postbuild": "sleep 3 && mkdir docs && cp -R dist/* docs"
   },

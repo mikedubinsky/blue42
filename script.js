@@ -1,72 +1,69 @@
 import Chart from 'chart.js/auto'
 
+const voteResults = {};
+const url = "https://il7bkysao3dscz7bylpledumk40tbmof.lambda-url.us-east-1.on.aws/questions";
 document.addEventListener('DOMContentLoaded', async () => {
 
-    const data = [
-        {year: 2010, count: 10},
-        {year: 2011, count: 20},
-        {year: 2012, count: 15},
-        {year: 2013, count: 25},
-        {year: 2014, count: 22},
-        {year: 2015, count: 30},
-        {year: 2016, count: 28},
-    ];
+    const isCached = !!localStorage.getItem('answers');
+    const answers = localStorage.getItem('answers') ?? [];
 
-    new Chart(
-        document.getElementById('aiResultsChart'),
-        {
-            type: 'bar',
-            data: {
-                labels: data.map(row => row.year),
-                datasets: [
-                    {
-                        label: 'Acquisitions by year',
-                        data: data.map(row => row.count)
-                    }
-                ]
-            }
-        }
-    );
-    const questions = await getQuestions();
-    const answers = [];
-    let graphResults = {};
-    // const questions = [];
-    //todo: remove log
-    console.log("Questions:", questions);
-
-    if (questions.length === 0 || questions[0]?.error) {
-        //TODO Add error message
+    if (answers && answers.length > 0) {
+        await postAnswers(JSON.parse(answers), isCached);
     } else {
-        addQuestions(questions);
-    }
-    const slides = document.querySelector('.slides');
-    const slidesCount = document.querySelectorAll('.slide').length - 1;
-    let currentIndex = 0;
-
-    const updateSlidePosition = () => {
-        slides.style.transform = `translateX(-${currentIndex * 100}%)`;
-    };
-
-    const handleButtonClick = async (answer) => {
-        currentIndex++;
-        updateSlidePosition();
-        if (currentIndex < slidesCount) {
-            answers.push(answer);
+        const questions = await getQuestions();
+        if (questions.length === 0 || questions[0]?.error) {
+            //TODO Add error message
         } else {
-            graphResults = postAnswers(answers);
+            addQuestions(questions);
         }
+        const slides = document.querySelector('.slides');
+        const slidesCount = document.querySelectorAll('.slide').length - 1;
+        let currentIndex = 0;
+
+        const updateSlidePosition = () => {
+            slides.style.transform = `translateX(-${currentIndex * 100}%)`;
+        };
+
+        const handleButtonClick = async (answer) => {
+            currentIndex++;
+            updateSlidePosition();
+            if (currentIndex < slidesCount) {
+                answers.push(answer);
+            } else {
+                await postAnswers(answers, isCached);
+            }
+        };
+
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', function (event) {
+                const buttonValue = event.target.value;
+                handleButtonClick(buttonValue);
+            });
+        });
+    }
+
+    const handleResultsButtonClick = async (vote) => {
+        // hide buttons
+        const agree = document.getElementById('vote-results');
+        agree.classList.add('hidden');
+
+        createCandidatesResultsChart();
+        if (!localStorage.getItem('voted')) {
+            await putVote(vote);
+            localStorage.setItem('voted', vote);
+        }
+        createVoteResultsChart();
     };
 
-    document.querySelectorAll('.btn').forEach(button => {
+    document.querySelectorAll('.results-btn').forEach(button => {
         button.addEventListener('click', function (event) {
             const buttonValue = event.target.value;
-            handleButtonClick(buttonValue);
+            handleResultsButtonClick(buttonValue);
         });
     });
 });
 
 async function getQuestions() {
-    const url = "https://il7bkysao3dscz7bylpledumk40tbmof.lambda-url.us-east-1.on.aws/questions";
     try {
         const response = await fetch(url, {
             method: 'GET',
@@ -91,8 +88,11 @@ async function getQuestions() {
     }
 }
 
-async function postAnswers(answers) {
-    const url = "https://il7bkysao3dscz7bylpledumk40tbmof.lambda-url.us-east-1.on.aws/questions";
+async function postAnswers(answers, isCached) {
+    const body = {
+        'answers': answers,
+        'isCached': isCached
+    }
 
     fetch(url, {
         method: 'POST',
@@ -101,7 +101,7 @@ async function postAnswers(answers) {
             'Accept': '*/*',
             'Connection': 'keep-alive'
         },
-        body: JSON.stringify(answers) // Convert the array to a JSON string
+        body: JSON.stringify(body)
     })
         .then(response => {
             if (!response.ok) {
@@ -110,14 +110,38 @@ async function postAnswers(answers) {
             return response.json(); // Parse the JSON response if needed
         })
         .then(data => {
-            console.log("DATA: ", data);
+            localStorage.setItem('answers', JSON.stringify(answers));
             showResponse(data.message, data.imageUrl, data.voteResults);
-            return data.voteResults;
+            this.voteResults = data.voteResults;
         })
         .catch(error => {
             console.error('Error:', error);
             showResponse("Oops - Sorry! Something went wrong. Can I blame it on politics?");
             return {};
+        });
+}
+
+async function putVote(vote) {
+    const body = {
+        'vote': vote
+    }
+
+    fetch(url, {
+        method: 'PUT',
+        headers: {
+            'Host': 'il7bkysao3dscz7bylpledumk40tbmof.lambda-url.us-east-1.on.aws',
+            'Accept': '*/*',
+            'Connection': 'keep-alive'
+        },
+        body: JSON.stringify(body)
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
         });
 }
 
@@ -178,20 +202,24 @@ function addQuestions(questions) {
         // package it all together and present
         slideDiv.appendChild(answersDiv);
         document.getElementById('slides-container').prepend(slideDiv);
-        const placeholder = document.getElementById("placeholder-slide");
-        if (placeholder) {
-            placeholder.remove();
-        }
+        removeMainPlaceholder();
     });
+}
+
+function removeMainPlaceholder() {
+    const placeholder = document.getElementById("placeholder-slide");
+    if (placeholder) {
+        placeholder.remove();
+    }
 }
 
 function showResponse(message = "", imageUrl = "", voteResults) {
     const slogan = document.getElementById('slogan')
     slogan.textContent = "";
 
-    // remove placeholder
+    // remove placeholders
+    removeMainPlaceholder();
     const results = document.getElementById('results-placeholder')
-    console.log("PollResults: ", voteResults)
     if (voteResults) {
         const agree = document.getElementById('vote-results');
         agree.classList.remove('hidden');
@@ -209,4 +237,116 @@ function showResponse(message = "", imageUrl = "", voteResults) {
     slogan.textContent = message;
 
     results.scrollIntoView({behavior: 'smooth'});
+}
+
+function createCandidatesResultsChart() {
+    const graph = document.getElementById('candidate-graph');
+    graph.classList.remove('hidden');
+    const agree = document.getElementById('vote-results');
+    agree.classList.add('hidden');
+
+
+    const candidateChartData = JSON.parse(JSON.stringify(this.voteResults));
+    delete candidateChartData.candidates;
+    delete candidateChartData.No;
+    delete candidateChartData.Yes;
+    if (candidateChartData.Unidentified < 1) {
+        delete candidateChartData.Unidentified;
+    }
+    // const maxValue = Math.max(...Object.values(candidateChartData));
+
+    new Chart(
+        document.getElementById('aiResultsChart'),
+        {
+            type: 'bar',
+            data: {
+                labels: Object.keys(candidateChartData),
+                datasets: [
+                    {
+                        label: 'Candidates',
+                        data: Object.values(candidateChartData),
+                        backgroundColor: ['aqua', 'pink', 'lightgreen', 'lightblue', 'gold'],
+                        borderColor: ['blue', 'fuchsia', 'green', 'navy', 'black'],
+                        borderWidth: 2,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    title: {
+                        display: true,
+                        text: 'Candidates',
+                        font: {
+                            size: 24  // Increase title font size
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 20
+                            }
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            font: {
+                                size: 20
+                            }
+                        },
+                    }
+                }
+            }
+        }
+    );
+}
+
+function createVoteResultsChart() {
+    const voteData = {"Yes": this.voteResults.Yes ?? 0, "No": this.voteResults.No ?? 0};
+
+    const graph = document.getElementById('vote-graph');
+    graph.classList.remove('hidden');
+
+    const data = {
+        labels: Object.keys(voteData),
+        datasets: [{
+            label: 'TEST',
+            data: Object.values(voteData),
+            backgroundColor: [
+                'rgba(47,147,8,0.85)',
+                'rgb(210,24,5)'
+            ],
+            hoverOffset: 4
+        }]
+    };
+    const options = {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Agree',
+                font: {
+                    size: 20
+                }
+            }
+        }
+    };
+
+    // Configuration for the chart
+    const config = {
+        type: 'pie',
+        data: data,
+        options: options
+    };
+
+    // Render the chart in the canvas
+    new Chart(
+        document.getElementById('voteResultsChart'),
+        config
+    );
 }

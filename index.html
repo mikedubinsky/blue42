@@ -19,7 +19,6 @@
 </header>
 
 
-
 <!-- Slider Form Block -->
 <div id="slider-form">
     <div class="slider">
@@ -32,14 +31,14 @@
             <div class="slide" id="results">
                 <div class="placeholder" id="results-placeholder">
                 </div>
-                <img id="aiImage" >
+                <img id="aiImage">
                 <h2 id="slogan">Please be patient as AI generates your results.</h2>
                 <div id="vote-results" class="hidden">
                     <h3>Do you agree?</h3>
-                    <p>(Click to see graphical results)</p>
+                    <p>(Click to see graphs of all results)</p>
                     <button class="results-btn" value="Yes">Yes</button>
                     <button class="results-btn" value="No">No</button>
-                    <button class="results-btn" value="undisclosed">Undisclosed</button>
+                    <!--                    <button class="results-btn" value="undisclosed">Undisclosed</button>-->
                 </div>
             </div>
         </div>
@@ -47,8 +46,13 @@
 </div>
 
 <!--pie chart-->
-<div style="width:800px;" class="zhidden"><canvas id="aiResultsChart"></canvas></div>
+<div class="graphs hidden" id="candidate-graph">
+    <canvas id="aiResultsChart" class="graph"></canvas>
+</div>
 
+<div class="graphs hidden" id="vote-graph">
+    <canvas id="voteResultsChart" class="graph"></canvas>
+</div>
 
 <!--disclaimer modal-->
 <div id="disclaimer" class="modal">
