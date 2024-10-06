@@ -5,13 +5,19 @@
     box-sizing: border-box;
 }
 
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
 body {
     font-family: 'Poppins', sans-serif;
+    background-color: rgba(33, 33, 33, .9);
+    height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: rgba(33, 33, 33, .9);
-    height: 100vh;
 }
 
 header {
@@ -23,7 +29,8 @@ header {
     color: white;
     padding: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    height: 85px;
+    height: 80px;
+    margin-bottom: 75px;
 }
 
 header h1 {
@@ -31,22 +38,16 @@ header h1 {
     text-align: center;
     font-size: 24px;
 }
-.graphs {
-    max-width: min(90%, 650px);
-    min-width: 50% !important;
-    /*width: 100%;*/
-}
 
-#slider-form {
+.container {
     min-width: 50%;
-    max-width: 99%;
+    max-width: min(90%, 650px);
+    flex: 1;
 }
 
 .slider {
-    padding: 75px 0;
     position: relative;
     width: 100%;
-    max-width: min(90%, 650px);
     margin: auto;
     overflow: hidden;
 }
@@ -57,7 +58,7 @@ header h1 {
     min-height: 200px;
 }
 
-.slide, .graph {
+.slide, .inner-container {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
@@ -67,7 +68,7 @@ header h1 {
     text-align: center;
     background: #D4E5F6;
 
-    h2, p {
+    h2, h3, p {
         margin-bottom: 15px;
     }
 }
@@ -83,30 +84,31 @@ header h1 {
     justify-content: space-around;
 }
 
-.btn, .results-btn {
+.btn, .results-btn, .form-button, #payment-form button#submit {
     padding: 12px 20px;
     margin: 12px;
     border: none;
     border-radius: 5px;
-    background-color: #007BAD;
+    background-color: #005679;
     color: #fff;
     cursor: pointer;
     font-size: 18px;
 }
 
-.btn:hover, .results-btn:hover {
-    background-color: #005679;
+.btn:hover, .results-btn:hover, .form-button:hover, #payment-form button#submit:hover {
+    background-color: #007BAD;
 }
 
 /* Footer Styles */
 footer {
-    bottom: 0;
     width: 100%;
     text-align: center;
     background-color: #333;
     color: #fff;
     padding: 10px;
     font-family: Arial, sans-serif;
+    height: 80px;
+    margin-top: 75px;
 }
 
 /* Modal styling */
@@ -124,8 +126,8 @@ footer {
 .modal-content {
     position: relative;
     background-color: #fff;
-    margin: 40% auto;
-    padding: 20px;
+    margin: 25% auto;
+    padding: 30px;
     width: 80%;
     max-width: 500px;
     border-radius: 5px;
@@ -152,7 +154,7 @@ a#openModal:hover {
 }
 
 #disclaimer h2 {
-    padding: 20px 0;
+    padding: 0 0 20px;
 }
 
 #disclaimer p {
@@ -210,10 +212,106 @@ a#openModal:hover {
     margin-bottom: 10px;
 }
 
-#vote-graph{
+.graphs {
     margin: 75px 0;
+}
+
+#vote-graph {
     canvas {
         padding: 50px;
     }
 }
 
+/*input entry form*/
+
+#infoForm {
+    #total-amount-text {
+        font-weight: bold;
+        margin: auto;
+    }
+
+    #total-amount {
+        margin: auto 20px auto 5px;
+    }
+
+
+    button.form-button, #payment-form button#submit {
+        padding: 9px 20px;
+    }
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    margin: 0 auto 2px;
+    flex-direction: row;
+    justify-content: center;
+    max-width: 300px;
+}
+
+label {
+    width: 100px; /* Set a fixed width for the label */
+    text-align: right;
+    padding-right: 20px;
+}
+
+input {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    height: 40px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.error {
+    color: red;
+    font-size: 12px;
+    display: none; /* Hidden by default */
+}
+
+.error.visible {
+    display: block;
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.input-container span {
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-right: none;
+    border-radius: 4px 0 0 4px;
+    font-size: 16px;
+    height: 40px;
+}
+
+.input-container input {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    height: 40px;
+    border: 1px solid #ccc;
+    border-radius: 0 4px 4px 0;
+    max-width: 125px;
+}
+
+#payment-form {
+    margin-top: 20px;
+
+    button#submit {
+        margin-top: 30px;
+    }
+}
+
+#payment-message {
+    line-height: 30px;
+    p{
+        text-align: left;
+        padding: 0 50px;
+    }
+}

@@ -1,13 +1,13 @@
 import Chart from 'chart.js/auto'
+import {addPlayAgainButton, checkPlayAgain} from './playAgain.js';
 
 const voteResults = {};
 const url = "https://il7bkysao3dscz7bylpledumk40tbmof.lambda-url.us-east-1.on.aws/questions";
 document.addEventListener('DOMContentLoaded', async () => {
-
     const isCached = !!localStorage.getItem('answers');
     const answers = localStorage.getItem('answers') ?? [];
 
-    if (answers && answers.length > 0) {
+    if (answers && answers.length > 0 && !checkPlayAgain()) {
         await postAnswers(JSON.parse(answers), isCached);
     } else {
         const questions = await getQuestions();
@@ -53,6 +53,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             localStorage.setItem('voted', vote);
         }
         createVoteResultsChart();
+        showSupport();
+        addPlayAgainButton('results');
     };
 
     document.querySelectorAll('.results-btn').forEach(button => {
@@ -242,9 +244,6 @@ function showResponse(message = "", imageUrl = "", voteResults) {
 function createCandidatesResultsChart() {
     const graph = document.getElementById('candidate-graph');
     graph.classList.remove('hidden');
-    const agree = document.getElementById('vote-results');
-    agree.classList.add('hidden');
-
 
     const candidateChartData = JSON.parse(JSON.stringify(this.voteResults));
     delete candidateChartData.candidates;
@@ -304,6 +303,7 @@ function createCandidatesResultsChart() {
             }
         }
     );
+    graph.scrollIntoView({behavior: 'smooth'});
 }
 
 function createVoteResultsChart() {
@@ -349,4 +349,10 @@ function createVoteResultsChart() {
         document.getElementById('voteResultsChart'),
         config
     );
+}
+
+function showSupport() {
+    const support = document.getElementById('stripe-container');
+    support.classList.remove('hidden');
+
 }

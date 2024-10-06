@@ -12,15 +12,15 @@
     <meta property="og:image" content="https://aivote.s3.us-east-1.amazonaws.com/mystery.png">
     <meta property="og:url" content="https://aivote.dubslack.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
 <header>
     <h1>AI Vote Helper</h1>
 </header>
 
-
-<!-- Slider Form Block -->
-<div id="slider-form">
+<div class="container">
+    <!-- Slider Form Block -->
     <div class="slider">
         <div class="slides" id="slides-container">
             <!-- <div class="slide">Placeholder Question?<div class="buttons"><button class="btn">Yes</button><button class="btn">No</button></div></div>-->
@@ -43,17 +43,52 @@
             </div>
         </div>
     </div>
-</div>
 
-<!--pie chart-->
-<div class="graphs hidden" id="candidate-graph">
-    <canvas id="aiResultsChart" class="graph"></canvas>
-</div>
+    <!--pie chart-->
+    <div class="graphs hidden" id="candidate-graph">
+        <canvas id="aiResultsChart" class="inner-container"></canvas>
+    </div>
 
-<div class="graphs hidden" id="vote-graph">
-    <canvas id="voteResultsChart" class="graph"></canvas>
-</div>
+    <div class="graphs hidden" id="vote-graph">
+        <canvas id="voteResultsChart" class="inner-container"></canvas>
+    </div>
 
+    <div class="inner-container hidden" id="stripe-container">
+        <h3 class="title">Please support this project to play again</h3>
+        <form id="infoForm">
+            <!--            <div class="form-group">-->
+            <!--                <label for="note">Note</label>-->
+            <!--                <input type="text" id="note" name="note">-->
+            <!--            </div>-->
+            <!--            <span id="noteError" class="error">Note cannot be empty</span>-->
+            <div class="form-group">
+                <!--                <label for="amount">Amount</label>-->
+                <div class="input-container">
+                    <span>$</span>
+                    <input type="text" id="amount" name="amount" placeholder="Amount">
+                    <button type="submit" class="form-button">Next</button>
+                </div>
+                <!--                total field -->
+                <div class="total-container" style="display:none;">
+
+                    <span id="total-amount-text">Amount:</span>
+                    <span id="total-amount">$0.00</span>
+                    <button type="button" class="form-button" id="edit-amount-button">Edit</button>
+                </div>
+            </div>
+            <span id="amountError" class="error">Please enter a valid amount (minimum: $1)</span>
+        </form>
+        <div class="placeholder hidden" id="spinner"></div>
+        <!-- Display a payment form -->
+        <form id="payment-form" class="hidden">
+            <div id="payment-element">
+                <!--Stripe.js injects the Payment Element-->
+            </div>
+            <button id="submit" type="submit" class="form-button">Submit</button>
+        </form>
+        <div id="payment-message" class="hidden"></div>
+    </div>
+</div>
 <!--disclaimer modal-->
 <div id="disclaimer" class="modal">
     <div class="modal-content">
@@ -67,10 +102,12 @@
 
 <!-- Footer -->
 <footer>
-    <p>&copy; 2024 AiVote Dubslack. All Rights Reserved.</p> <a href="#" id="openModal">Disclaimer</a>
+    <p>&copy; 2024 AiVote Dubslack. All Rights Reserved.</p>
+    <a href="#" id="openModal">Disclaimer</a>
 </footer>
 
-<script type="module" src="script.js"></script>
+<script type="module" src="main.js"></script>
+<script type="module" src="support.js"></script>
 <script src="modal.js"></script>
 </body>
 </html>

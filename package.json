@@ -6,12 +6,22 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "parcel serve index.html --no-hmr",
     "build": "rm -rf docs dist .parcel-cache && parcel build index.html --no-cache --public-url .",
-    "postbuild": "sleep 3 && mkdir docs && cp -R dist/* docs"
+    "postbuild": "sleep 3 && mkdir docs && cp -R dist/* docs && git add docs/*"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "parcel": "^2.6.2"
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.0",
+    "events": "^3.3.0",
+    "https-browserify": "^1.0.0",
+    "parcel": "^2.6.2",
+    "process": "^0.11.10",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "string_decoder": "^1.3.0",
+    "url": "^0.11.4",
+    "vm-browserify": "^1.1.2"
   },
   "dependencies": {
     "@cubejs-client/core": "^0.31.0",
