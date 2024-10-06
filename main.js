@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
         const questions = await getQuestions();
         if (questions.length === 0 || questions[0]?.error) {
-            //TODO Add error message
+            addPlayAgainButton('placeholder-slide', "Sorry, an error occurred. Please click to try again.", true);
         } else {
             addQuestions(questions);
         }
