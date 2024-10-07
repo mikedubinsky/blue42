@@ -23,9 +23,13 @@
     <!-- Slider Form Block -->
     <div class="slider">
         <div class="slides" id="slides-container">
-            <!-- <div class="slide">Placeholder Question?<div class="buttons"><button class="btn">Yes</button><button class="btn">No</button></div></div>-->
             <div class="slide" id="placeholder-slide">
-                <div class="placeholder">
+                <div>
+                    <h3>Have AI help recommend a president.</h3><p>Click 'Next' and answers the questions to see the
+                        response:</p>
+                    <button id="get-started" class="form-button">Next</button>
+                </div>
+                <div class="placeholder hidden">
                 </div>
             </div>
             <div class="slide" id="results">
@@ -33,12 +37,12 @@
                 </div>
                 <img id="aiImage">
                 <h2 id="slogan">Please be patient as AI generates your results.</h2>
+                <p class="small" id="ai-delay">(AI images take about 20 seconds)</p>
                 <div id="vote-results" class="hidden">
                     <h3>Do you agree?</h3>
                     <p>(Click to see graphs of all results)</p>
                     <button class="results-btn" value="Yes">Yes</button>
                     <button class="results-btn" value="No">No</button>
-                    <!--                    <button class="results-btn" value="undisclosed">Undisclosed</button>-->
                 </div>
             </div>
         </div>
