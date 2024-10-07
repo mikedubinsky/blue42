@@ -160,6 +160,12 @@ a#openModal:hover {
 #disclaimer p {
     line-height: 25px;
 }
+#placeholder-slide{
+    min-height: 230px;
+    h3, p{
+        margin:20px auto;
+    }
+}
 
 
 .placeholder {
@@ -203,9 +209,12 @@ a#openModal:hover {
     margin-top: 35px;
 }
 
+.small {
+    font-size: 13px;
+}
 
 #vote-results {
-    padding: 25px;
+    padding: 0 25px;
 }
 
 #vote-results h2 {
