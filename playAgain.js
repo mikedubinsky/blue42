@@ -10,6 +10,11 @@ export function addPlayAgainButton(containerId, label = "Play Again", force = fa
         playAgain.setAttribute("href", "#");
         playAgain.textContent = label;
         playAgain.onclick = function () {
+            const receipt = localStorage.getItem('receipt') ?? false;
+            localStorage.clear();
+            if(receipt){
+                localStorage.setItem('receipt', receipt);
+            }
             location.reload();
             return false;
         };
