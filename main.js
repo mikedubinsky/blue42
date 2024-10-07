@@ -3,17 +3,39 @@ import {addPlayAgainButton, checkPlayAgain} from './playAgain.js';
 
 const voteResults = {};
 const url = "https://il7bkysao3dscz7bylpledumk40tbmof.lambda-url.us-east-1.on.aws/questions";
-document.addEventListener('DOMContentLoaded', async () => {
-    const isCached = !!localStorage.getItem('answers');
-    const answers = localStorage.getItem('answers') ?? [];
+const isCached = !!localStorage.getItem('answers');
+const answers = localStorage.getItem('answers') ?? [];
+let questions = localStorage.getItem('questions') ? JSON.parse(localStorage.getItem('questions')) : null;
+let key = localStorage.getItem('key') ?? null;
+
+const getStarted = document.getElementById('get-started');
+
+getStarted.addEventListener('click', async function (event) {
+    // show loading
+    const getStartedButton = document.getElementById('get-started');
+    const placeholderSlide = document.querySelector('#placeholder-slide .placeholder');
+    placeholderSlide.classList.remove('hidden');
+    getStartedButton.classList.add('hidden');
+    await getStartedClick();
+});
+
+
+async function getStartedClick() {
 
     if (answers && answers.length > 0 && !checkPlayAgain()) {
         await postAnswers(JSON.parse(answers), isCached);
     } else {
-        const questions = await getQuestions();
+        if (!questions || !key) {
+            const questionResponse = await getQuestions();
+            questions = questionResponse.questions ?? [];
+            key = questionResponse.key ?? '';
+        }
+
         if (questions.length === 0 || questions[0]?.error) {
             addPlayAgainButton('placeholder-slide', "Sorry, an error occurred. Please click to try again.", true);
         } else {
+            localStorage.setItem('questions', JSON.stringify(questions));
+            localStorage.setItem('key', key);
             addQuestions(questions);
         }
         const slides = document.querySelector('.slides');
@@ -41,27 +63,26 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         });
     }
+}
 
-    const handleResultsButtonClick = async (vote) => {
-        // hide buttons
-        const agree = document.getElementById('vote-results');
-        agree.classList.add('hidden');
+const handleResultsButtonClick = async (vote) => {
+    // hide buttons
+    const agree = document.getElementById('vote-results');
+    agree.classList.add('hidden');
 
-        createCandidatesResultsChart();
-        if (!localStorage.getItem('voted')) {
-            await putVote(vote);
-            localStorage.setItem('voted', vote);
-        }
-        createVoteResultsChart();
-        showSupport();
-        addPlayAgainButton('results');
-    };
-
-    document.querySelectorAll('.results-btn').forEach(button => {
-        button.addEventListener('click', function (event) {
-            const buttonValue = event.target.value;
-            handleResultsButtonClick(buttonValue);
-        });
+    createCandidatesResultsChart();
+    if (!localStorage.getItem('voted')) {
+        await putVote(vote);
+        localStorage.setItem('voted', vote);
+    }
+    createVoteResultsChart(vote);
+    showSupport();
+    addPlayAgainButton('results');
+};
+document.querySelectorAll('.results-btn').forEach(button => {
+    button.addEventListener('click', function (event) {
+        const buttonValue = event.target.value;
+        handleResultsButtonClick(buttonValue);
     });
 });
 
@@ -93,7 +114,8 @@ async function getQuestions() {
 async function postAnswers(answers, isCached) {
     const body = {
         'answers': answers,
-        'isCached': isCached
+        'isCached': isCached,
+        'key': key
     }
 
     fetch(url, {
@@ -117,7 +139,7 @@ async function postAnswers(answers, isCached) {
             this.voteResults = data.voteResults;
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Error:', error.message);
             showResponse("Oops - Sorry! Something went wrong. Can I blame it on politics?");
             return {};
         });
@@ -218,6 +240,9 @@ function removeMainPlaceholder() {
 function showResponse(message = "", imageUrl = "", voteResults) {
     const slogan = document.getElementById('slogan')
     slogan.textContent = "";
+    const aiDelay = document.getElementById('ai-delay');
+    aiDelay.classList.add("hidden");
+
 
     // remove placeholders
     removeMainPlaceholder();
@@ -236,7 +261,7 @@ function showResponse(message = "", imageUrl = "", voteResults) {
         image.alt = message;
     }
     // set slogan
-    slogan.textContent = message;
+    slogan.textContent = message.replace(/^"|"$/g, '');
 
     results.scrollIntoView({behavior: 'smooth'});
 }
@@ -306,8 +331,9 @@ function createCandidatesResultsChart() {
     graph.scrollIntoView({behavior: 'smooth'});
 }
 
-function createVoteResultsChart() {
+function createVoteResultsChart(vote) {
     const voteData = {"Yes": this.voteResults.Yes ?? 0, "No": this.voteResults.No ?? 0};
+    voteData[vote] = voteData[vote] + 1;
 
     const graph = document.getElementById('vote-graph');
     graph.classList.remove('hidden');
@@ -315,11 +341,11 @@ function createVoteResultsChart() {
     const data = {
         labels: Object.keys(voteData),
         datasets: [{
-            label: 'TEST',
+            label: ' ',
             data: Object.values(voteData),
             backgroundColor: [
-                'rgba(47,147,8,0.85)',
-                'rgb(210,24,5)'
+                'rgba(122,241,76,0.85)',
+                'rgb(241,104,104)'
             ],
             hoverOffset: 4
         }]
@@ -354,5 +380,4 @@ function createVoteResultsChart() {
 function showSupport() {
     const support = document.getElementById('stripe-container');
     support.classList.remove('hidden');
-
 }
