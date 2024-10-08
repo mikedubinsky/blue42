@@ -150,14 +150,32 @@ footer {
     cursor: pointer;
 }
 
-a#openModal {
+@media (max-width: 375px) {
+    .footer-row {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2px !important;
+        margin-top: 20px
+    }
+}
+
+.footer-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+}
+
+a#openModal, a.mailLink {
     color: inherit;
     text-decoration: none;
     padding: 10px 0;
-    display: block;
+    display: inline-block;
 }
 
-a#openModal:hover {
+a#openModal:hover, a.mailLink:hover {
     color: #d4e5e5;
     text-decoration: underline;
 }
