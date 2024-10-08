@@ -52,6 +52,15 @@ header h1 {
     overflow: hidden;
 }
 
+#slides-container .slide#results {
+    border-radius: 25px;
+}
+
+#results .play-button, #stripe-container .play-button {
+    max-width: 250px;
+    margin: 20px auto auto;
+}
+
 .slides {
     display: flex;
     transition: transform 0.5s ease-in-out;
@@ -160,10 +169,12 @@ a#openModal:hover {
 #disclaimer p {
     line-height: 25px;
 }
-#placeholder-slide{
+
+#placeholder-slide {
     min-height: 230px;
-    h3, p{
-        margin:20px auto;
+
+    h3, p {
+        margin: 20px auto;
     }
 }
 
@@ -200,6 +211,10 @@ a#openModal:hover {
     }
 }
 
+#share-link-div {
+    font-size: 14px;
+    padding-top: 15px;
+}
 
 .hidden {
     display: none;
@@ -319,7 +334,8 @@ input {
 
 #payment-message {
     line-height: 30px;
-    p{
+
+    p {
         text-align: left;
         padding: 0 50px;
     }

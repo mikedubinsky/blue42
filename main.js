@@ -135,7 +135,7 @@ async function postAnswers(answers, isCached) {
         })
         .then(data => {
             localStorage.setItem('answers', JSON.stringify(answers));
-            showResponse(data.message, data.imageUrl, data.voteResults);
+            showResponse(data.message, data.imageUrl, data.voteResults, data.imageId);
             this.voteResults = data.voteResults;
         })
         .catch(error => {
@@ -237,7 +237,7 @@ function removeMainPlaceholder() {
     }
 }
 
-function showResponse(message = "", imageUrl = "", voteResults) {
+function showResponse(message = "", imageUrl = "", voteResults, imageId) {
     const slogan = document.getElementById('slogan')
     slogan.textContent = "";
     const aiDelay = document.getElementById('ai-delay');
@@ -259,6 +259,14 @@ function showResponse(message = "", imageUrl = "", voteResults) {
         const image = document.getElementById("aiImage");
         image.src = imageUrl;
         image.alt = message;
+
+        // push as new page to history and populate url
+        history.pushState('', '', 'gallery.html?id=' + imageId);
+        const shareLink = document.getElementById('share-link');
+        shareLink.href = '/gallery.html?id=' + imageId;
+        shareLink.textContent = window.location.origin + '/gallery.html?id=' + imageId;
+        const shareLinkDiv = document.getElementById('share-link-div');
+        shareLinkDiv.classList.remove('hidden');
     }
     // set slogan
     slogan.textContent = message.replace(/^"|"$/g, '');
