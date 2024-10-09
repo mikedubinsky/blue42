@@ -358,3 +358,37 @@ input {
         padding: 0 50px;
     }
 }
+
+#aiImage {
+    opacity: 1;
+    transition: opacity 1s ease-in-out;
+}
+
+.fade-out {
+    opacity: 0;
+}
+
+/*gallery slider*/
+.arrow {
+    position: absolute;
+    top: 36%;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 7px;
+    background-color: rgba(173, 216, 230, 0.7); /* Light blue */
+    color: white;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.left-arrow {
+    left: 10px;
+}
+
+.right-arrow {
+    right: 10px;
+}
+
+.arrow:hover {
+    background-color: rgba(70, 130, 180, 1); /* Darker blue */
+}
