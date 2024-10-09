@@ -13,8 +13,13 @@
     <meta property="og:url" content="https://aivote.dubslack.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://js.stripe.com/v3/"></script>
+    <script src="gtm.js"></script>
 </head>
 <body>
+<noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M5ZWGQFJ"
+            height="0" width="0" style="display:none;visibility:hidden"></iframe>
+</noscript>
 <header>
     <h1>AI Vote Helper</h1>
 </header>
@@ -25,7 +30,8 @@
         <div class="slides" id="slides-container">
             <div class="slide" id="placeholder-slide">
                 <div>
-                    <h3>Have AI help recommend a president.</h3><p>Click 'Next' and answers the questions to see the
+                    <h3>Have AI help recommend a president.</h3>
+                    <p>Click 'Next' and answers the questions to see the
                         response:</p>
                     <button id="get-started" class="form-button">Next</button>
                 </div>
@@ -109,7 +115,8 @@
 <!-- Footer -->
 <footer>
     <p>&copy; 2024 AiVote Dubslack. All Rights Reserved.</p>
-    <span class="footer-row"><a href="#" id="openModal">Disclaimer</a><a href="mailto:support@dubslack.com" class="mailLink">support@dubslack.com</a></span>
+    <span class="footer-row"><a href="#" id="openModal">Disclaimer</a><a href="mailto:support@dubslack.com"
+                                                                         class="mailLink">support@dubslack.com</a></span>
 </footer>
 
 <script type="module" src="main.js"></script>
