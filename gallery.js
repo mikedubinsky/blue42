@@ -1,4 +1,4 @@
-import {addPlayAgainButton} from './playAgain.js';
+import {addGalleryLinkToFooter} from './playAgain.js';
 
 const baseUrl = "https://il7bkysao3dscz7bylpledumk40tbmof.lambda-url.us-east-1.on.aws/gallery";
 const galleryUrl = "https://aivote.s3.us-east-1.amazonaws.com/";
@@ -13,14 +13,17 @@ let cachedImages = {};
 let currentIndex = 0;
 
 document.addEventListener("DOMContentLoaded", async function (event) {
-    if (imageId || receipt) {
-        if (!imageId) {
-            imageId = "df862158939a5266";
+    if (!imageId) {
+        if (localStorage.getItem('lastImageId')) {
+            imageId = localStorage.getItem('lastImageId');
+        } else {
+            // fallback
+            imageId = "03fbfbd26e562b20";
         }
-        await getImage(imageId);
-    } else {
-        window.location.href = home;
     }
+    addGalleryLinkToFooter();
+
+    await getImage(imageId);
 });
 
 async function getImage() {
@@ -126,16 +129,19 @@ function showResponse(message = "", imageUrl = "") {
         slogan.textContent = message.replace(/^"|"$/g, '');
     }
 
-    if (!key) {
+    if (!key || receipt) {
         // verify payment
         const playAgain = document.createElement("button");
         playAgain.classList.add("form-button", "play-button");
-        playAgain.textContent = "Play Now!";
+        playAgain.textContent = receipt ? "Play Again!" : "Play Now!";
         playAgain.onclick = function () {
-
+            const imageId = localStorage.getItem('lastImageId') ?? false;
             localStorage.clear();
             if (receipt) {
                 localStorage.setItem('receipt', receipt);
+            }
+            if(imageId){
+                localStorage.setItem('lastImageId', imageId);
             }
             // location.reload();
             window.location.href = "/";

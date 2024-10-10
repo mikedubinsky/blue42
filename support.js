@@ -1,4 +1,4 @@
-import {addPlayAgainButton} from './playAgain.js';
+import {addPlayAgainButton, addViewGalleryButton} from './playAgain.js';
 
 const url = "https://il7bkysao3dscz7bylpledumk40tbmof.lambda-url.us-east-1.on.aws/support";
 const form = document.getElementById('infoForm');
@@ -116,7 +116,8 @@ async function handleSubmit(e) {
         const paid = (paymentIntent.amount / 100).toLocaleString('en-US', {style: 'currency', currency: 'USD'});
         localStorage.setItem('receipt', paymentIntent.id);
         showMessage(`<h3>Thank you for your support.</h3><p>Amount: ${paid}<br>Reference: ${paymentIntent.id}</p>`, true);
-        addPlayAgainButton('stripe-container');
+        addPlayAgainButton('payment-buttons');
+        addViewGalleryButton('payment-buttons', 'View Gallery');
     } else {
         showMessage("An unexpected error occurred.", false);
     }

@@ -1,14 +1,18 @@
 import Chart from 'chart.js/auto'
-import {addPlayAgainButton, checkPlayAgain} from './playAgain.js';
+import {addGalleryLinkToFooter, addPlayAgainButton, checkPlayAgain} from './playAgain.js';
 
-const voteResults = {};
+let voteResults = {};
 const url = "https://il7bkysao3dscz7bylpledumk40tbmof.lambda-url.us-east-1.on.aws/questions";
 const isCached = !!localStorage.getItem('answers');
-const answers = localStorage.getItem('answers') ?? [];
+const answers = localStorage.getItem('answers') ? JSON.parse(localStorage.getItem('answers')) : [];
 let questions = localStorage.getItem('questions') ? JSON.parse(localStorage.getItem('questions')) : null;
 let key = localStorage.getItem('key') ?? null;
 
 const getStarted = document.getElementById('get-started');
+
+document.addEventListener("DOMContentLoaded", async function (event) {
+    addGalleryLinkToFooter();
+});
 
 getStarted.addEventListener('click', async function (event) {
     // show loading
@@ -23,7 +27,7 @@ getStarted.addEventListener('click', async function (event) {
 async function getStartedClick() {
 
     if (answers && answers.length > 0 && !checkPlayAgain()) {
-        await postAnswers(JSON.parse(answers), isCached);
+        await postAnswers(answers, isCached);
     } else {
         if (!questions || !key) {
             const questionResponse = await getQuestions();
@@ -75,14 +79,15 @@ const handleResultsButtonClick = async (vote) => {
         await putVote(vote);
         localStorage.setItem('voted', vote);
     }
+
     createVoteResultsChart(vote);
     showSupport();
     addPlayAgainButton('results');
 };
 document.querySelectorAll('.results-btn').forEach(button => {
-    button.addEventListener('click', function (event) {
+    button.addEventListener('click', async function (event) {
         const buttonValue = event.target.value;
-        handleResultsButtonClick(buttonValue);
+        await handleResultsButtonClick(buttonValue);
     });
 });
 
@@ -133,14 +138,15 @@ async function postAnswers(answers, isCached) {
             }
             return response.json(); // Parse the JSON response if needed
         })
-        .then(data => {
+        .then(async data => {
             localStorage.setItem('answers', JSON.stringify(answers));
-            showResponse(data.message, data.imageUrl, data.voteResults, data.imageId);
-            this.voteResults = data.voteResults;
+            localStorage.setItem('lastImageId', data.imageId);
+            voteResults = data.voteResults;
+            await showResponse(data.message, data.imageUrl, data.voteResults, data.imageId);
         })
-        .catch(error => {
+        .catch(async error => {
             console.error('Error:', error.message);
-            showResponse("Oops - Sorry! Something went wrong. Can I blame it on politics?");
+            await showResponse("Oops - Sorry! Something went wrong. Can I blame it on politics?");
             return {};
         });
 }
@@ -237,7 +243,7 @@ function removeMainPlaceholder() {
     }
 }
 
-function showResponse(message = "", imageUrl = "", voteResults, imageId) {
+async function showResponse(message = "", imageUrl = "", voteResults, imageId) {
     const slogan = document.getElementById('slogan')
     slogan.textContent = "";
     const aiDelay = document.getElementById('ai-delay');
@@ -248,8 +254,12 @@ function showResponse(message = "", imageUrl = "", voteResults, imageId) {
     removeMainPlaceholder();
     const results = document.getElementById('results-placeholder')
     if (voteResults) {
-        const agree = document.getElementById('vote-results');
-        agree.classList.remove('hidden');
+        if (!localStorage.getItem('voted')) {
+            const agree = document.getElementById('vote-results');
+            agree.classList.remove('hidden');
+        } else {
+            await handleResultsButtonClick(localStorage.getItem('voted'));
+        }
     }
 
     results.classList.remove('placeholder');
@@ -260,8 +270,6 @@ function showResponse(message = "", imageUrl = "", voteResults, imageId) {
         image.src = imageUrl;
         image.alt = message;
 
-        // push as new page to history and populate url
-        history.pushState('', '', 'gallery.html?id=' + imageId);
         const shareLink = document.getElementById('share-link');
         shareLink.href = '/gallery.html?id=' + imageId;
         shareLink.textContent = window.location.origin + '/gallery.html?id=' + imageId;
@@ -278,7 +286,7 @@ function createCandidatesResultsChart() {
     const graph = document.getElementById('candidate-graph');
     graph.classList.remove('hidden');
 
-    const candidateChartData = JSON.parse(JSON.stringify(this.voteResults));
+    const candidateChartData = JSON.parse(JSON.stringify(voteResults));
     delete candidateChartData.candidates;
     delete candidateChartData.No;
     delete candidateChartData.Yes;
@@ -340,7 +348,7 @@ function createCandidatesResultsChart() {
 }
 
 function createVoteResultsChart(vote) {
-    const voteData = {"Yes": this.voteResults.Yes ?? 0, "No": this.voteResults.No ?? 0};
+    const voteData = {"Yes": voteResults.Yes ?? 0, "No": voteResults.No ?? 0};
     voteData[vote] = voteData[vote] + 1;
 
     const graph = document.getElementById('vote-graph');
