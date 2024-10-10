@@ -6,7 +6,7 @@ const amountInput = document.getElementById('amount');
 const amountError = document.getElementById('amountError');
 const noteInput = document.getElementById('note');
 const noteError = document.getElementById('noteError');
-const stripe = Stripe('pk_live_51KiTxhG01bbaC0pFwZFznQhwgevhLcws58TcSYAIXJaSOem1MllR1IUd8R5owdrEdyw5U7HmBgYFHwe2mqolJiIC00ufqhmzO3');
+const stripe = Stripe('pk_test_51KiTxhG01bbaC0pFEa57cI7TL3BokZ8mcVe0H3o6nf76OrE8Z4TUkPQJ0dc6kUZdjvQNCZfYEijOlxsNWz6Zoi6k001STYeCHf');
 let elements;
 let paymentElement;
 

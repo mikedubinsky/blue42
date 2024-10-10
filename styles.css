@@ -392,3 +392,64 @@ input {
 .arrow:hover {
     background-color: rgba(70, 130, 180, 1); /* Darker blue */
 }
+
+/*gallery slider */
+#thumbnail-slider-container {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.thumbnail-slider {
+    display: flex;
+    gap: 5px;
+    overflow: hidden;
+    width: 93%;
+    padding: 10px;
+    scroll-behavior: smooth;
+}
+
+.thumbnail {
+    cursor: pointer;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border: 2px solid transparent;
+    transition: border 0.3s;
+    flex-shrink: 0;
+}
+
+.thumbnail.active {
+    border: 3px solid #007BAD;
+}
+
+.thumbnail:hover {
+    opacity: .6;
+}
+
+.gallery-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.gallery-arrow-left {
+    left: 0;
+}
+
+.gallery-arrow-right {
+    right: 0;
+}
+
+.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

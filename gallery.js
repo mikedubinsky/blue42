@@ -1,6 +1,7 @@
 import {addPlayAgainButton} from './playAgain.js';
 
 const baseUrl = "https://il7bkysao3dscz7bylpledumk40tbmof.lambda-url.us-east-1.on.aws/gallery";
+const galleryUrl = "https://aivote.s3.us-east-1.amazonaws.com/";
 const home = "/";
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
@@ -8,6 +9,7 @@ let imageId = urlParams.get('id');
 const key = localStorage.getItem('key') ?? false;
 const receipt = localStorage.getItem('receipt') ?? false;
 let imageList = localStorage.getItem('images') ? JSON.parse(localStorage.getItem('images')) : [];
+let cachedImages = {};
 let currentIndex = 0;
 
 document.addEventListener("DOMContentLoaded", async function (event) {
@@ -23,7 +25,7 @@ document.addEventListener("DOMContentLoaded", async function (event) {
 
 async function getImage() {
     let url = baseUrl + '?imageId=' + imageId;
-    if (receipt && !imageList.length) {
+    if (receipt && (!imageList.length || Object.keys(cachedImages).length === 0)) {
         url += "&receipt=" + receipt;
     }
     await fetch(url, {
@@ -39,11 +41,16 @@ async function getImage() {
             return response.json(); // Parse the JSON response if needed
         })
         .then(data => {
-            if (data.imageList) {
+            if (Object.keys(cachedImages).length > 0 && cachedImages[imageId]) {
+                setCurrentIndex(imageId);
+                createGallerySlider(imageList);
+            } else if (data.imageList) {
                 imageList = data.imageList;
                 localStorage.setItem("images", JSON.stringify(data.imageList));
                 setCurrentIndex(imageId);
+                createGallerySlider(imageList);
             }
+            cachedImages[imageId] = {'imageUrl': data.imageUrl, 'slogan': data.message};
             showResponse(data.message, data.imageUrl);
         })
         .catch(error => {
@@ -53,47 +60,54 @@ async function getImage() {
 }
 
 async function updateImage(index) {
-    // Apply fade-out effect
+    const slogan = document.getElementById('slogan')
     const imageElement = document.getElementById('aiImage');
     imageElement.classList.add('fade-out');
 
-    let url = baseUrl + '?imageId=' + imageList[index];
+    //check cache
+    if (cachedImages[imageList[index]]) {
+        slogan.textContent = cachedImages[imageList[index]]['slogan'];
+        imageElement.src = cachedImages[imageList[index]]['imageUrl'];
+    } else {
+        let url = baseUrl + '?imageId=' + imageList[index];
 
-    await fetch(url, {
-        method: 'GET',
-        headers: {
-            'Host': 'il7bkysao3dscz7bylpledumk40tbmof.lambda-url.us-east-1.on.aws',
-        }
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Server error: ' + response.statusText);
+        await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Host': 'il7bkysao3dscz7bylpledumk40tbmof.lambda-url.us-east-1.on.aws',
             }
-            return response.json(); // Parse the JSON response if needed
         })
-        .then(data => {
-            const slogan = document.getElementById('slogan')
-            imageElement.src = data.imageUrl;
-            if (data.message) {
-                slogan.textContent = data.message.replace(/^"|"$/g, '');
-                imageElement.alt = data.message;
-            } else {
-                imageElement.alt = "AI Image";
-                slogan.textContent = "";
-            }
-            imageElement.classList.remove('fade-out');
-        })
-        .catch(error => {
-            console.error("Error: ", error);
-            window.location.href = home;
-        });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Server error: ' + response.statusText);
+                }
+                return response.json(); // Parse the JSON response if needed
+            })
+            .then(data => {
+                imageElement.src = data.imageUrl;
+                if (data.message) {
+                    slogan.textContent = data.message.replace(/^"|"$/g, '');
+                    imageElement.alt = data.message;
+                } else {
+                    imageElement.alt = "AI Image";
+                    slogan.textContent = "";
+                    data.message = "";
+                }
+                cachedImages[imageList[index]] = {'imageUrl': data.imageUrl, 'slogan': data.message};
+                imageElement.classList.remove('fade-out');
+            })
+            .catch(error => {
+                console.error("Error: ", error);
+                window.location.href = home;
+            });
+    }
 }
-
 
 function removeMainPlaceholder() {
     const placeholder = document.getElementById("results-placeholder");
     placeholder.classList.remove('placeholder');
 }
+
 
 function showResponse(message = "", imageUrl = "") {
     const slogan = document.getElementById('slogan')
@@ -129,9 +143,11 @@ function showResponse(message = "", imageUrl = "") {
         };
         document.getElementById('results').appendChild(playAgain);
     }
-    if (receipt) {
-        addSliderArrows();
-    }
+
+    // // arrows on main image = OFF
+    // if (receipt) {
+    //     addSliderArrows();
+    // }
 }
 
 function addSliderArrows() {
@@ -168,5 +184,65 @@ function setCurrentIndex(imageId) {
         if (imageList[i] === imageId) {
             currentIndex = i;
         }
+    }
+}
+
+function updateActiveThumbnail(thumbnail) {
+    document.querySelectorAll('.thumbnail').forEach(img => img.classList.remove('active'));
+    thumbnail.classList.add('active');
+}
+
+function createGallerySlider(imageList) {
+    const thumbnailSliderContainer = document.getElementById("thumbnail-slider-container");
+    const leftButton = document.createElement("button");
+    leftButton.classList.add("gallery-arrow", "gallery-arrow-left");
+    leftButton.innerHTML = "&#10094;";
+    leftButton.onclick = function () {
+        slideLeft()
+    };
+    const rightButton = document.createElement("button");
+    rightButton.classList.add("gallery-arrow", "gallery-arrow-right");
+    rightButton.innerHTML = "&#10095;";
+    rightButton.onclick = function () {
+        slideRight()
+    };
+
+    const thumbnailSlider = document.createElement("div");
+    thumbnailSlider.classList.add("thumbnail-slider");
+
+    for (let i = 0; i < imageList.length; i++) {
+        const imageElement = document.createElement("img");
+        imageElement.src = galleryUrl + imageList[i] + ".png";
+        imageElement.index = i;
+        imageElement.onclick = async function () {
+            await updateImage(this.index);
+            updateActiveThumbnail(this);
+        };
+        if (currentIndex === i) {
+            imageElement.classList.add("thumbnail", "active");
+        } else {
+            imageElement.classList.add("thumbnail");
+        }
+        thumbnailSlider.append(imageElement);
+    }
+
+    thumbnailSliderContainer.append(leftButton);
+    thumbnailSliderContainer.append(thumbnailSlider);
+    thumbnailSliderContainer.append(rightButton);
+}
+
+// Function to slide the thumbnails left
+function slideLeft() {
+    const thumbnailSlider = document.querySelector("#thumbnail-slider-container .thumbnail-slider");
+    if (thumbnailSlider) {
+        thumbnailSlider.scrollBy({left: -200, behavior: 'smooth'});
+    }
+}
+
+// Function to slide the thumbnails right
+function slideRight() {
+    const thumbnailSlider = document.querySelector("#thumbnail-slider-container .thumbnail-slider");
+    if (thumbnailSlider) {
+        thumbnailSlider.scrollBy({left: 200, behavior: 'smooth'});
     }
 }
