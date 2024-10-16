@@ -3,6 +3,7 @@ import {addGalleryLinkToFooter, addPlayAgainButton, checkPlayAgain} from './play
 
 let voteResults = {};
 const url = "https://il7bkysao3dscz7bylpledumk40tbmof.lambda-url.us-east-1.on.aws/questions";
+const galleryUrl = "https://aivote.s3.us-east-1.amazonaws.com/";
 const isCached = !!localStorage.getItem('answers');
 const answers = localStorage.getItem('answers') ? JSON.parse(localStorage.getItem('answers')) : [];
 let questions = localStorage.getItem('questions') ? JSON.parse(localStorage.getItem('questions')) : null;
@@ -25,8 +26,14 @@ getStarted.addEventListener('click', async function (event) {
 
 
 async function getStartedClick() {
-
-    if (answers && answers.length > 0 && !checkPlayAgain()) {
+    const lastImageId = localStorage.getItem('lastImageId') ? localStorage.getItem('lastImageId') : null;
+    const lastSlogan = localStorage.getItem('lastSlogan') ? localStorage.getItem('lastSlogan') : null;
+    const lastVoteResults = localStorage.getItem('lastVoteResults') ? JSON.parse(localStorage.getItem('lastVoteResults')) : null;
+    if(lastImageId && lastSlogan && lastVoteResults){
+        voteResults = lastVoteResults;
+        await showResponse(lastSlogan, galleryUrl + lastImageId + ".png", lastVoteResults, lastImageId);
+    }else if (answers && answers.length > 0 && !checkPlayAgain()) {
+        // can probably remove if caching works
         await postAnswers(answers, isCached);
     } else {
         if (!questions || !key) {
@@ -141,6 +148,8 @@ async function postAnswers(answers, isCached) {
         .then(async data => {
             localStorage.setItem('answers', JSON.stringify(answers));
             localStorage.setItem('lastImageId', data.imageId);
+            localStorage.setItem('lastSlogan', data.message);
+            localStorage.setItem('lastVoteResults', JSON.stringify(data.voteResults));
             voteResults = data.voteResults;
             await showResponse(data.message, data.imageUrl, data.voteResults, data.imageId);
         })
@@ -293,7 +302,8 @@ function createCandidatesResultsChart() {
     if (candidateChartData.Unidentified < 1) {
         delete candidateChartData.Unidentified;
     }
-    // const maxValue = Math.max(...Object.values(candidateChartData));
+    let screenWidth = window.innerWidth;
+    const fontSize = screenWidth < 768 ? 12 : 14; // 10px for mobile, 14px for desktop
 
     new Chart(
         document.getElementById('aiResultsChart'),
@@ -312,7 +322,7 @@ function createCandidatesResultsChart() {
                 ]
             },
             options: {
-                responsive: true,
+                aspectRatio: 2, // Set aspect ratio (width/height)
                 plugins: {
                     legend: {
                         display: false,
@@ -329,14 +339,14 @@ function createCandidatesResultsChart() {
                     x: {
                         ticks: {
                             font: {
-                                size: 20
+                                size: fontSize
                             }
                         }
                     },
                     y: {
                         ticks: {
                             font: {
-                                size: 20
+                                size: fontSize
                             }
                         },
                     }
@@ -367,7 +377,7 @@ function createVoteResultsChart(vote) {
         }]
     };
     const options = {
-        responsive: true,
+        aspectRatio: 1, // Set aspect ratio (width/height)
         plugins: {
             title: {
                 display: true,

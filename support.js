@@ -5,7 +5,8 @@ const form = document.getElementById('infoForm');
 const amountInput = document.getElementById('amount');
 const amountError = document.getElementById('amountError');
 const noteInput = document.getElementById('note');
-const noteError = document.getElementById('noteError');
+const emailInput = document.getElementById('email');
+const emailError = document.getElementById('emailError');
 const stripe = Stripe('pk_test_51KiTxhG01bbaC0pFEa57cI7TL3BokZ8mcVe0H3o6nf76OrE8Z4TUkPQJ0dc6kUZdjvQNCZfYEijOlxsNWz6Zoi6k001STYeCHf');
 let elements;
 let paymentElement;
@@ -16,19 +17,25 @@ form.addEventListener('submit', function (event) {
     let hasError = false;
 
     // Reset error messages
-    // noteError.classList.remove('visible');
+    emailError.classList.remove('visible');
     amountError.classList.remove('visible');
 
-    // // Validate note (must not be empty)
-    // if (noteInput.value.trim() === '') {
-    //     noteError.classList.add('visible');
-    //     hasError = true;
-    // }
+    // Validate note (must not be empty)
+    const email = emailInput.value.trim();
+    if(email){
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+         if(!re.test(email)){
+             emailError.classList.add('visible');
+             hasError = true;
+         }
+    }
+
+    const note = noteInput.value.trim();
 
     // Validate amount (must be a valid number with up to 2 decimal places)
     const validAmount = /^\d+(\.\d{1,2})?$/.test(amountInput.value);
     const amountValue = parseFloat(amountInput.value).toFixed(2)
-    if (!validAmount || amountValue < .99) {
+    if (!validAmount || amountValue <= 1.99) {
         amountError.classList.add('visible');
         hasError = true;
         if (paymentElement) {
@@ -41,16 +48,20 @@ form.addEventListener('submit', function (event) {
         // Hide the input field and "Next" button, show the total and "Edit" button
 
         document.getElementById('total-amount').textContent = `$${amountValue}`;
+        document.querySelector('#infoForm input#email').disabled = true;
+        document.querySelector('#infoForm input#note').disabled = true;
         document.querySelector('#infoForm .input-container').style.display = 'none';
         document.querySelector('#infoForm .total-container').style.display = 'flex';
         // get credit card form
         setLoading(true);
-        initialize(amountValue).then(r => setLoading(false));
+        initialize(amountValue, email, note).then(r => setLoading(false));
     }
 });
 
 document.getElementById('edit-amount-button').addEventListener('click', function () {
     // Show the input field again and hide the total display
+    document.querySelector('#infoForm input#email').disabled = false;
+    document.querySelector('#infoForm input#note').disabled = false;
     document.querySelector('#infoForm .input-container').style.display = 'flex';
     document.querySelector('#infoForm .total-container').style.display = 'none';
 
@@ -64,7 +75,14 @@ document
     .addEventListener("submit", handleSubmit);
 
 // Fetches a payment intent and captures the client secret
-async function initialize(amount) {
+async function initialize(amount, email, note) {
+    let params = {'amount': Math.floor(amount * 100)};
+    if (email) {
+        params["email"] = email;
+    }
+    if (note) {
+        params["comment"] = note;
+    }
     try {
         const response = await fetch(url, {
             method: "POST",
@@ -73,7 +91,7 @@ async function initialize(amount) {
                 'Accept': '*/*',
                 'Connection': 'keep-alive'
             },
-            body: JSON.stringify({'amount': amount * 100}),
+            body: JSON.stringify(params),
         });
 
         const {paymentIntent} = await response.json();

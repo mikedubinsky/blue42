@@ -299,7 +299,7 @@ footer#ai-footer span.footer-row a:hover {
 .form-group {
     display: flex;
     align-items: center;
-    margin: 0 auto 2px;
+    margin: 8px auto 2px;
     flex-direction: row;
     justify-content: center;
     max-width: 300px;
