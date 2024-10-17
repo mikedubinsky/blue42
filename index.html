@@ -13,15 +13,18 @@
     <meta property="og:url" content="https://aivote.dubslack.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://js.stripe.com/v3/"></script>
-    <script src="gtm.js"></script>
 </head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JR8JY500SH"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-JR8JY500SH');
+</script>
 <body>
-<noscript>
-    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M5ZWGQFJ"
-            height="0" width="0" style="display:none;visibility:hidden"></iframe>
-</noscript>
 <header>
-    <h1>AI Vote Helper</h1>
+    <h1><a href="/">AI Vote Helper</a></h1>
 </header>
 
 <div class="container">
@@ -65,12 +68,14 @@
     </div>
 
     <div class="inner-container hidden" id="stripe-container">
-        <h3 class="title">Please support this project to view the full gallery and play again!</h3>
+        <h3 class="title">Please support this project to view the full gallery and play again!</h3><span><a href="#"
+                                                                                                            id="openTermsModal">Terms and Conditions</a></span>
+
         <form id="infoForm">
-                        <div class="form-group">
-                            <input type="text" id="email" name="email" placeholder="Email (optional)">
-                        </div>
-                        <span id="emailError" class="error">Invalid email address</span>
+            <div class="form-group">
+                <input type="text" id="email" name="email" placeholder="Email (optional)">
+            </div>
+            <span id="emailError" class="error">Invalid email address</span>
             <div class="form-group">
                 <input type="text" id="note" name="note" placeholder="Comment (optional)" maxlength="250">
             </div>
@@ -111,7 +116,19 @@
         <h2>Disclaimer</h2>
         <p>The content and images presented on this website are for entertainment purposes only and do not reflect the
             views or opinions of the website or any AI services used. Any resemblance to real persons, living or dead,
-            is purely coincidental and not intended.</p>
+            is purely coincidental and not intended.</p><br/>
+    </div>
+</div>
+
+<div id="termsAndConditions" class="modal">
+    <div class="modal-content">
+        <span class="close-terms-btn">&times;</span>
+        <h2>Terms and Conditions</h2>
+        <p>By supporting this project, you will gain immediate access to the software and be able to view all images in
+            the gallery for the duration of your current browser session. Please note that access will remain active
+            until your browser’s cache is cleared. Normal usage applies, and any excessive usage or misuse may result in
+            access being blocked. Should you lose access, future requests can be made by providing your past transaction
+            details via written request to support@dubslack.com.</p><br/>
     </div>
 </div>
 
@@ -125,5 +142,6 @@
 <script type="module" src="main.js"></script>
 <script type="module" src="support.js"></script>
 <script src="modal.js"></script>
+<script src="termsModal.js"></script>
 </body>
 </html>

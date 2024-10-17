@@ -218,8 +218,10 @@ function createGallerySlider(imageList) {
 
     for (let i = 0; i < imageList.length; i++) {
         const imageElement = document.createElement("img");
-        imageElement.src = galleryUrl + imageList[i] + ".png";
+        // imageElement.src = galleryUrl + imageList[i] + ".png";
+        imageElement.dataset.src = galleryUrl + imageList[i] + ".png";
         imageElement.index = i;
+        imageElement.classList.add('lazy');
         imageElement.onclick = async function () {
             await updateImage(this.index);
             updateActiveThumbnail(this);
@@ -230,12 +232,29 @@ function createGallerySlider(imageList) {
             imageElement.classList.add("thumbnail");
         }
         thumbnailSlider.append(imageElement);
+        imageObserver.observe(imageElement);
     }
 
     thumbnailSliderContainer.append(leftButton);
     thumbnailSliderContainer.append(thumbnailSlider);
     thumbnailSliderContainer.append(rightButton);
 }
+
+const lazyLoad = (image) => {
+    image.src = image.dataset.src;  // Assign the actual src when in view
+    image.onload = () => {
+        image.style.opacity = 1;  // Optional: fade in effect
+    };
+};
+
+const imageObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+            lazyLoad(entry.target);
+            observer.unobserve(entry.target);  // Stop observing once loaded
+        }
+    });
+});
 
 // Function to slide the thumbnails left
 function slideLeft() {
