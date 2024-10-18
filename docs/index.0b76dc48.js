@@ -1,0 +1,2 @@
+document.addEventListener("DOMContentLoaded",function(e){let n=document.getElementById("termsAndConditions"),t=document.getElementById("openTermsModal"),d=document.querySelector(".close-terms-btn");t.addEventListener("click",function(e){e.preventDefault(),n.style.display="block"}),d.addEventListener("click",function(){n.style.display="none"}),window.addEventListener("click",function(e){e.target===n&&(n.style.display="none")})});
+//# sourceMappingURL=index.0b76dc48.js.map
