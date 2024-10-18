@@ -116,7 +116,7 @@ async function initialize(amount, email, note) {
 
 async function handleSubmit(e) {
     e.preventDefault();
-    setLoading(true);
+    document.querySelector("#payment-form #submit").disabled = true;
 
     const {error, paymentIntent} = await stripe.confirmPayment({
         elements,
@@ -145,22 +145,22 @@ async function handleSubmit(e) {
 // ------- UI helpers -------
 
 function showMessage(messageText, success) {
-    const paymentFormContainer = document.querySelector("#payment-form");
-    paymentFormContainer.classList.add("hidden");
-
     const messageContainer = document.querySelector("#payment-message");
-    messageContainer.classList.remove("error");
-    messageContainer.classList.remove("hidden");
-    messageContainer.innerHTML = messageText;
 
     if (!success) {
         messageContainer.classList.add("error");
+        messageContainer.innerHTML = messageText;
 
         setTimeout(function () {
             messageContainer.classList.add("hidden");
             messageContainer.textContent = "";
         }, 8000);
     } else {
+        messageContainer.innerHTML = messageText;
+        messageContainer.classList.remove("error");
+        messageContainer.classList.remove("hidden");
+        const paymentFormContainer = document.querySelector("#payment-form");
+        paymentFormContainer.classList.add("hidden");
         const infoForm = document.querySelector("#infoForm");
         infoForm.classList.add("hidden");
         const title = document.querySelector("#stripe-container.inner-container .title");
