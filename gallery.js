@@ -238,6 +238,26 @@ function createGallerySlider(imageList) {
     thumbnailSliderContainer.append(leftButton);
     thumbnailSliderContainer.append(thumbnailSlider);
     thumbnailSliderContainer.append(rightButton);
+
+    // Listen for scroll events to update arrow visibility
+    thumbnailSlider.addEventListener('scroll', updateArrowVisibility);
+    // Check if arrows should be shown or hidden
+    function updateArrowVisibility() {
+        // At the start
+        if (thumbnailSlider.scrollLeft === 0) {
+            leftButton.classList.add('hidden');
+        } else {
+            leftButton.classList.remove('hidden');
+        }
+
+        // At the end
+        if (thumbnailSlider.scrollLeft + thumbnailSlider.clientWidth >= thumbnailSlider.scrollWidth) {
+            rightButton.classList.add('hidden');
+        } else {
+            rightButton.classList.remove('hidden');
+        }
+    }
+    updateArrowVisibility(); // initial
 }
 
 const lazyLoad = (image) => {
