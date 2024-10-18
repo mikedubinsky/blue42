@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function (event) {
+document.addEventListener("DOMContentLoaded", function () {
     // Get modal, link to open modal, and close button elements
     const termsModal = document.getElementById("termsAndConditions");
     const openTermsModalLink = document.getElementById("openTermsModal");
